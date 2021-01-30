@@ -2,7 +2,7 @@ import React, {Suspense} from 'react';
 import {Spin} from "antd";
 import {HashRouter as Router, Switch, Route} from "react-router-dom";
 
-import './styles/App.css';
+import './styles/App.less';
 import {layoutRouteList} from "./utils/router";
 import {IRoute} from "./config/routeTree";
 

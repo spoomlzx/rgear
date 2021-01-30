@@ -1,16 +1,16 @@
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+const WebpackBar = require("webpackbar");
+const path = require("path");
+const CracoAntDesignPlugin = require("craco-antd");
 const CracoLessPlugin = require('craco-less');
-
-// const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
 
 module.exports = {
   webpack: {
-    // plugins: [new SimpleProgressWebpackPlugin()]
-  },
-  babel: {
-    presets: ["@babel/preset-env"],
     plugins: [
-      ['import', {libraryName: 'antd', style: true}],
-      ["@babel/plugin-proposal-decorators", {legacy: true}],
+      new WebpackBar({ profile: true }),
+      ...(process.env.NODE_ENV === 'development'
+        ? [new BundleAnalyzerPlugin({ openAnalyzer: false })]
+        : [])
     ]
   },
   devServer: {
@@ -24,15 +24,25 @@ module.exports = {
   },
   plugins: [
     {
+      plugin: CracoAntDesignPlugin,
+      options: {
+        customizeTheme: {
+          '@primary-color': '#a5681d',
+        },
+      }
+    },
+    {
       plugin: CracoLessPlugin,
       options: {
-        lessLoaderOptions: {
-          lessOptions: {
-            modifyVars: {'@primary-color': '#1d6aa5'},
-            javascriptEnabled: true,
-          },
+        cssLoaderOptions: {
+          modules: {localIdentName: '[local]_[hash:base64:5]'}
+        },
+        modifyLessRule: function(lessRule, _context) {
+          lessRule.test = /\.(less)$/;
+          lessRule.exclude = path.join(__dirname, 'node_modules');
+          return lessRule;
         },
       },
     },
   ],
-};
+}

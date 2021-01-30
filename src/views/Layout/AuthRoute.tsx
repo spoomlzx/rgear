@@ -26,7 +26,7 @@ const AuthRoute: React.FC<AuthRouteProps> = (props) => {
   if (route.redirect) {
     return <Redirect to={route.redirect!} push/>;
   }
-  return <Route path={route.path} component={route.component}/>;
+  return <Route key={route.path} path={route.path} component={route.component}/>;
 }
 
 export default connect(({user}: IStoreState) => ({token: user.token, role: user.role}))(AuthRoute);

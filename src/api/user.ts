@@ -1,5 +1,5 @@
 import request, {ResponseData} from "../utils/request";
-
+import {UserState} from "../store/module/user";
 
 export interface LoginData {
   username: string;
@@ -7,5 +7,5 @@ export interface LoginData {
 }
 
 export function apiLogin(data: LoginData) {
-  return request.post<ResponseData<string>>('/mock/11/login', {data})
+  return request.post<ResponseData<UserState>>('/login', {data})
 }

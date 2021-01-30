@@ -1,7 +1,7 @@
-const TokenKey = 'Gear-Token';
+import AdminConfig from "../config/config";
 
-export const getToken: () => string = () => localStorage.getItem(TokenKey) || '';
+export const getToken: () => string = () => localStorage.getItem(AdminConfig.TOKEN_KEY) || '';
 
-export const setToken = (token: string) => localStorage.setItem(TokenKey, token);
+export const setToken = (token: string) => localStorage.setItem(AdminConfig.TOKEN_KEY, token);
 
-export const removeToken = () => localStorage.removeItem(TokenKey);
+export const removeToken = () => localStorage.removeItem(AdminConfig.TOKEN_KEY);

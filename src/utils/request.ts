@@ -1,6 +1,7 @@
 import {getToken} from "./token";
 import {extend, RequestOptionsInit} from 'umi-request';
 import {notification} from 'antd';
+import AdminConfig from "../config/config";
 
 export interface ResponseData<T> {
   code: number;
@@ -45,10 +46,9 @@ const errorHandler = (error: { response: any; }) => {
   return response;
 };
 const request = extend({
-  errorHandler,
   // 默认错误处理
-  credentials: 'include', // 默认请求是否带上cookie
-
+  errorHandler,
+  prefix: '/mock/11'
 });
 
 // request拦截器, 改变url 或 options.
@@ -60,22 +60,24 @@ request.interceptors.request.use((url: string, options: RequestOptionsInit) => {
       Authorization: token
     }
   }
-  console.log(options.headers)
-  return (
-    {
-      url: url,
-      options: options,
-    }
-  );
+  return ({
+    url: url,
+    options: options,
+  });
 })
 
 // response拦截器, 处理response
-request.interceptors.response.use((response: Response, options: RequestOptionsInit) => {
-  let token = response.headers.get("x-auth-token");
-  if (token) {
-    localStorage.setItem("x-auth-token", token);
+request.interceptors.response.use(async (response: Response, options: RequestOptionsInit) => {
+  const data = await response.clone().json();
+  if (data.code === AdminConfig.LOGIN_EXPIRE) {
+
   }
-  return response;
+  // 如果请求成功
+  if (data.code === AdminConfig.SUCCESS_CODE) {
+    return response;
+  }
+  // 如果请求失败
+  return Promise.reject(new Error(data.msg));
 });
 
 

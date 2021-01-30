@@ -1,9 +1,10 @@
 import React from "react";
 import {Button, Checkbox, Form, Input} from "antd";
 import {connect} from "react-redux";
-import {setUserToken, login} from "../../../store/module/user";
+import {setUserInfo, UserState} from "../../../store/module/user";
 import {IStoreState} from "../../../store/types";
-import {apiLogin, LoginData} from "../../../api/login";
+import {apiLogin, LoginData} from "../../../api/user";
+import {RouteComponentProps} from "react-router-dom";
 
 
 const layout = {
@@ -14,24 +15,28 @@ const tailLayout = {
   wrapperCol: {offset: 8, span: 16},
 };
 
-interface LoginProps {
+interface LoginProps extends RouteComponentProps {
   token: string;
-  setUserToken: (token: string) => void;
-  login: (data: LoginData) => void;
+  setUserInfo: (user: UserState) => void;
 }
 
 const Login: React.FC<LoginProps> = (props) => {
-  const {setUserToken} = props;
+  const {setUserInfo} = props;
 
-  const onFinish = async (values: any) => {
-    try {
-      // 登录
-      const res = await apiLogin(values);
-      setUserToken(res.data)
-      console.log(res)
-    } catch (error) {
+  const next = () => {
+    setTimeout(() => {
+      const params = new URLSearchParams(props.history.location.search);
+      const redirect = params.get('redirect');
+      props.history.push(redirect || '/');
+    }, 10);
+  };
 
-    }
+  const onFinish = (loginData: LoginData) => {
+    // 登录
+    apiLogin(loginData).then(res => {
+      setUserInfo(res.data);
+      next();
+    }).catch(error => console.log(error));
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -66,7 +71,6 @@ const Login: React.FC<LoginProps> = (props) => {
         <Checkbox>Remember me</Checkbox>
       </Form.Item>
 
-      {props.token}
       <Form.Item {...tailLayout}>
         <Button type="primary" htmlType="submit">
           Submit
@@ -76,4 +80,4 @@ const Login: React.FC<LoginProps> = (props) => {
   )
 }
 
-export default connect(({user}: IStoreState) => ({token: user.token}), {setUserToken, login})(Login);
+export default connect(({user}: IStoreState) => ({token: user.token}), {setUserInfo})(Login);

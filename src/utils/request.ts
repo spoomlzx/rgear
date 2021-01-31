@@ -1,4 +1,4 @@
-import {getToken} from "./token";
+import {getToken} from "./localstorage";
 import {extend, RequestOptionsInit} from 'umi-request';
 import {notification} from 'antd';
 import AdminConfig from "../config/config";

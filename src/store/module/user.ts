@@ -1,6 +1,6 @@
 import {IAction} from "../types";
 import {Reducer} from "redux";
-import {getToken, removeToken, setToken} from "../../utils/token";
+import LocalStore, {getToken, removeToken, setToken} from "../../utils/localstorage";
 
 export interface UserState {
   token: string;
@@ -8,10 +8,14 @@ export interface UserState {
   role: string;
 }
 
+const USER_KEY = 'R-gear-user';
+const localUser = LocalStore.getValue<UserState>(USER_KEY) || {};
+
 const defaultUser: UserState = {
   token: getToken(),
-  username: "sp",
-  role: ""
+  username: '',
+  role: '',
+  ...localUser
 }
 
 const SET_USER_INFO = 'SET_USER_INFO';
@@ -32,12 +36,14 @@ const userReducer: Reducer<UserState, IAction<UserState>> = (state = defaultUser
   switch (type) {
     case SET_USER_INFO:
       setToken(payload.token);
+      LocalStore.setValue(USER_KEY, payload);
       return {
         ...state,
         ...payload,
       }
     case SET_USER_LOGOUT:
       removeToken();
+      LocalStore.removeValue(USER_KEY);
       return {
         ...defaultUser,
       }

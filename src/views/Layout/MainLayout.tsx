@@ -1,6 +1,6 @@
 import React, {Suspense} from "react";
 import {Breadcrumb, Layout, Menu, Spin} from "antd";
-import {withRouter, Switch} from "react-router-dom";
+import {withRouter, Switch, Route} from "react-router-dom";
 import {businessRouteList} from "../../utils/router";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
 import {IRoute} from "../../config/routeTree";
@@ -13,7 +13,6 @@ interface MainLayoutProps {
 }
 
 const MainLayout: React.FC<MainLayoutProps> = (props) => {
-  console.log(businessRouteList)
   return (
     <Layout className="layout">
       <Header>
@@ -37,7 +36,14 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
                 {
                   businessRouteList.map((route: IRoute) => {
                     return (
-                      <AuthRoute route={route} key={route.path}/>
+                      <Route
+                        key={route.path}
+                        exact={route.path !== '*'}
+                        path={route.path}
+                        render={props => (
+                          <AuthRoute {...props} route={route}/>
+                        )}
+                      />
                     )
                   })
                 }
